@@ -1,7 +1,7 @@
 <!--
  * @Author: Yokee
  * @Date: 2020-11-17 11:40:13
- * @LastEditTime: 2020-11-20 11:51:04
+ * @LastEditTime: 2020-11-25 10:24:32
  * @FilePath: \admin\src\views\rank\index.vue
 -->
 <template>
@@ -17,21 +17,29 @@
     <div class="rank-table">
       <div class="table">
         <span class="table-header">来源排行</span>
-        <el-table :data="domainData" border style="width: 100%">
+        <el-table :data="domain.results" border style="width: 100%">
           <el-table-column prop="url" label="URL" min-width="100%">
           </el-table-column>
           <el-table-column prop="num" label="次数" min-width="100%">
           </el-table-column>
         </el-table>
+        <div class="pagin">
+        <el-pagination  :page-size="domain.page.limit" layout="prev, pager, next" background :total="domain.page.total">
+        </el-pagination>
+        </div>
       </div>
       <div class="table">
         <span class="table-header">域名排行</span>
-        <el-table :data="sourceData" border style="width: 100%">
+        <el-table :data="source.results" border style="width: 100%">
           <el-table-column prop="url" label="URL" min-width="100%">
           </el-table-column>
           <el-table-column prop="num" label="次数" min-width="100%">
           </el-table-column>
         </el-table>
+        <div  class="pagin">
+        <el-pagination :page-size="source.page.limit" layout="prev, pager, next" background :total="source.page.total">
+        </el-pagination>
+        </div>
       </div>
     </div>
   </div>
@@ -39,21 +47,18 @@
 
 <script>
 import { countMi, topRef, topLite } from "../../api/index";
-import changeTime from "@/utils/time";
 export default {
   data() {
     return {
       mi1: 0,
       mi5: 0,
-      domainData: [],
-      sourceData: [],
-      time: 0,
+      domain: { page: {}, results: [] },
+      source: { page: {}, results: [] },
       timer1: null,
       timer2: null,
     };
   },
   beforeMount() {
-    this.time = changeTime(new Date());
     const loading = this.$loading({
       lock: true,
       text: "Loading",
@@ -70,42 +75,40 @@ export default {
   mounted() {
     this.timer1 = setInterval(() => {
       this.countHandler();
-        }, 1000);
+    }, 1000);
     this.timer2 = setInterval(() => {
       this.liteHandler();
       this.refHandler();
     }, 20000);
   },
   beforeDestroy() {
-    clearInterval(this.timer1)
-    clearInterval(this.timer2)
-    this.timer1=null
-    this.timer2=null
+    clearInterval(this.timer1);
+    clearInterval(this.timer2);
+    this.timer1 = null;
+    this.timer2 = null;
   },
   methods: {
     countHandler: async function () {
       let res = await countMi();
       if (res) {
-      this.mi1 =  res.mi1IP
-       this.mi5= res.mi5IP
+        this.mi1 = res.mi1IP;
+        this.mi5 = res.mi5IP;
       }
     },
-    liteHandler: async function () {
+    liteHandler: async function (page = 1) {
       let res = await topLite({
-        start: this.time,
-        end: this.time,
+        page,
       });
-      if (res.length != 0) {
-        this.sourceData = [...res];
+      if (res) {
+        this.source = {...res};
       }
     },
-    async refHandler() {
+    async refHandler(page = 1) {
       let res = await topRef({
-        start: this.time,
-        end: this.time,
+        page,
       });
-      if (res.length != 0) {
-        this.domainData = [...res];
+      if (res) {
+        this.domain = {...res}
       }
     },
   },
@@ -154,5 +157,11 @@ export default {
 .table-header {
   font-size: 24px;
   margin: 50px 0;
+}
+.pagin{
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
 }
 </style>

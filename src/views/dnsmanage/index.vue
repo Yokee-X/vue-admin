@@ -1,7 +1,7 @@
 <!--
  * @Author: Yokee
  * @Date: 2020-11-16 17:47:32
- * @LastEditTime: 2020-11-20 11:43:43
+ * @LastEditTime: 2020-11-23 10:15:22
  * @FilePath: \admin\src\views\dnsmanage\index.vue
 -->
 <template>
@@ -17,22 +17,22 @@
     </div>
     <div class="table">
       <el-table :data="domain.results" border style="width: 100%">
-        <el-table-column label="序号" width="80" align="center">
+        <el-table-column label="序号" min-width="20" align="center" max-width="80">
           <template v-slot="scope">
             <span>{{ scope.row.id }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="时间" width="200">
+        <el-table-column label="时间" min-width="20" >
           <template v-slot="scope">
             <span>{{ changeTime(scope.row.createTime) }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="域名" prop="domain" min-width="250">
+        <el-table-column label="域名" prop="domain" min-width="20">
         </el-table-column>
         <el-table-column
           label="状态"
           prop="domain"
-          min-width="120"
+          min-width="20"
           align="center"
         >
           <template v-slot="scope">
@@ -53,7 +53,7 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="操作" min-width="120" align="center">
+        <el-table-column label="操作" min-width="20" align="center">
           <template v-slot="scope">
             <el-button @click="open(scope.row.domain)">查看</el-button>
           </template>

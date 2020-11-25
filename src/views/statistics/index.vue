@@ -1,7 +1,7 @@
 <!--
  * @Author: Yokee
  * @Date: 2020-11-16 17:19:16
- * @LastEditTime: 2020-11-20 11:20:26
+ * @LastEditTime: 2020-11-25 10:27:22
  * @FilePath: \admin\src\views\statistics\index.vue
 -->
 <template>
@@ -19,15 +19,6 @@
         :picker-options="pickerOptions"
       >
       </el-date-picker>
-      <el-select v-model="type" placeholder="请选择" class="select">
-        <el-option
-          v-for="item in options"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
-        >
-        </el-option>
-      </el-select>
       <el-button type="primary" class="button" @click="sysHandler()"
         >查询</el-button
       >
@@ -76,17 +67,6 @@ export default {
           },
         ],
       },
-      options: [
-        {
-          value: "domainRef",
-          label: "来源",
-        },
-        {
-          value: "domainLite",
-          label: "短链接",
-        },
-      ],
-      type: "",
       timevalue: [],
       chartData: [],
       xAxis: [],
@@ -100,7 +80,6 @@ export default {
     const start = new Date();
     start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
     this.timevalue = [start, end];
-    this.type="domainRef"
     this.sysHandler();
   },
   methods: {
@@ -108,7 +87,7 @@ export default {
       let res = await sysLog({
         start: changeTime(this.timevalue[0]),
         end: changeTime(this.timevalue[1]),
-        type: this.type,
+        type: "domainRef",
       });
       if (res.length != 0) {
         this.chartData = [];

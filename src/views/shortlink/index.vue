@@ -1,7 +1,7 @@
 <!--
  * @Author: Yokee
  * @Date: 2020-11-16 17:47:32
- * @LastEditTime: 2020-11-20 11:05:29
+ * @LastEditTime: 2020-11-25 11:08:42
  * @FilePath: \admin\src\views\shortlink\index.vue
 -->
 <template>
@@ -17,32 +17,32 @@
     </div>
     <div class="table">
       <el-table :data="shortlist.results" border style="width: 100%">
-        <el-table-column label="序号" width="60" align="center">
+        <el-table-column label="序号" min-width="20" align="center">
           <template v-slot="scope">
             <span>{{ scope.row.id }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="时间" width="130">
+        <el-table-column label="时间" min-width="20">
           <template v-slot="scope">
             <span>{{ changeTime(scope.row.createTime) }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="原链接" prop="url" min-width="200">
+        <el-table-column label="原链接" prop="url" min-width="20">
         </el-table-column>
-        <el-table-column label="短链接" prop="urlLite" min-width="200">
+        <el-table-column label="短链接" prop="urlLite" min-width="20">
         </el-table-column>
         <el-table-column
           label="响应时间(s)"
           prop="sleep"
-          width="100"
+          min-width="20"
           align="center"
         >
         </el-table-column>
-        <el-table-column label="备注" prop="remark" min-width="200">
+        <el-table-column label="备注" prop="remark" min-width="20">
         </el-table-column>
-        <el-table-column label="平台" prop="os" width="120" align="center">
+        <el-table-column label="平台" prop="os" min-width="20" align="center">
         </el-table-column>
-        <el-table-column label="状态" width="80" align="center">
+        <el-table-column label="状态" min-width="20" align="center">
           <template v-slot="scope">
             <span
               :class="scope.row.status == 1 ? 'status-open' : 'status-close'"
@@ -50,12 +50,12 @@
             >
           </template>
         </el-table-column>
-        <el-table-column label="操作" min-width="120" align="center">
+        <el-table-column label="操作" min-width="20" align="center">
           <template v-slot="scope">
             <el-button @click="edit(scope.row)">编辑</el-button>
-            <!-- <el-button type="primary" @click="open(scope.row.urlLite)"
+            <el-button type="primary" @click="open(scope.row.id)"
               >查看</el-button
-            > -->
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -142,7 +142,7 @@
       </span>
     </el-dialog>
     <!-- 查询 -->
-    <el-dialog title="统计" :visible.sync="checkVisible" width="90%" center>
+    <el-dialog title="来源分析" :visible.sync="checkVisible" width="90%" center>
       <el-form>
         <el-form-item label="选择时间" label-width="80px">
           <el-date-picker
@@ -156,14 +156,21 @@
             :picker-options="pickerOptions"
           >
           </el-date-picker>
-          <el-button type="primary" class="button" @click="checkHandler()"
-            >查询</el-button
-          >
+          <el-button type="primary" class="button" @click="checkHandler(urlId,timevalue[0].getTime(),timevalue[1].getTime())"
+            >查询</el-button>
         </el-form-item>
-        <div class="linechart">
-          <line-chart :chart-data="chartData" :x-axis="xAxis" />
-        </div>
       </el-form>
+       <el-table :data="checkData" border style="width: 100%">
+        <el-table-column label="域名" prop="domain" min-width="20" align="center">
+        </el-table-column>
+                <el-table-column label="次数" prop="num" min-width="20" align="center">
+        </el-table-column>
+                <el-table-column label="百分比" min-width="20" align="center">
+                  <template  v-slot="scope">
+                      <span>{{scope.row.pa.toFixed(2)+'%'}}</span>
+                  </template>
+        </el-table-column>
+       </el-table>
     </el-dialog>
   </div>
 </template>
@@ -174,7 +181,7 @@ import {
   createLink,
   listLink,
   listDomain,
-  urlLog,
+  refPa
 } from "../../api";
 import changeTime from "../../utils/time.js";
 import LineChart from "../../components/lineChart";
@@ -187,6 +194,7 @@ export default {
       currentPage: 1,
       domainDate: [],
       shortlist: { page: {}, results: [] },
+      urlId:1,
       addForm: {
         id: "",
         url: "",
@@ -203,8 +211,6 @@ export default {
       },
       search: "",
       timevalue: [],
-      chartData: [],
-      xAxis: [],
       checkVisible: false,
       pickerOptions: {
         shortcuts: [
@@ -237,6 +243,7 @@ export default {
           },
         ],
       },
+      checkData:[]
     };
   },
   components: {
@@ -246,10 +253,6 @@ export default {
     this.listHandler();
     this.optionHandler();
   },
-  updated() {
-  console.log(this.addForm.os)
-
-},
   methods: {
     changeTime,
     edit(data) {
@@ -263,29 +266,19 @@ export default {
       };
 
     },
-    open(url) {
+    open(urlId) {
       this.checkVisible = true;
-      this.url = url;
-      const end = new Date();
-      const start = new Date();
-      start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-      this.timevalue = [start, end];
-      this.checkHandler();
+      this.urlId = urlId;
+      this.checkHandler(this.urlId);
     },
-    async checkHandler() {
-      let res = await urlLog({
-        start: changeTime(this.timevalue[0]),
-        end: changeTime(this.timevalue[1]),
-        type: "domainLite",
-        url: this.url,
+    async checkHandler(urlId,start=0,end=0) {
+      let res = await refPa({
+        urlId,
+      start,
+      end
       });
-      if (res.length != 0) {
-        this.chartData = [];
-        this.xAxis = [];
-        for (let i in res) {
-          this.chartData.push(res[i].num);
-          this.xAxis.push(res[i].day);
-        }
+      if(res){
+        this.checkData=[...res]
       }
     },
     searchTemp() {

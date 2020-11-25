@@ -1,7 +1,7 @@
 /*
  * @Author: Yokee
  * @Date: 2020-11-16 10:43:48
- * @LastEditTime: 2020-11-20 11:07:27
+ * @LastEditTime: 2020-11-24 09:57:54
  * @FilePath: \admin\src\router\index.js
  */
 import Vue from "vue";
@@ -13,6 +13,8 @@ import dnsmanage from "../views/dnsmanage";
 import shortlink from "../views/shortlink";
 import rank from "../views/rank";
 import store from "../store";
+import password from "../views/password";
+
 Vue.use(VueRouter);
 
 const routes = [
@@ -40,6 +42,10 @@ const routes = [
       {
         path: "/shortlink",
         component: shortlink
+      },
+      {
+        path:'/password',
+        component:password,
       }
     ]
   },

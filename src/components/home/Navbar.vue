@@ -1,14 +1,24 @@
+<!--
+ * @Author: Yokee
+ * @Date: 2020-11-17 11:26:26
+ * @LastEditTime: 2020-11-24 09:58:08
+ * @FilePath: \admin\src\components\home\Navbar.vue
+-->
 <template>
   <div class="navbar">
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <img :src="user.avatar" class="avatar" />
+          <!-- <img :src="user.avatar" class="avatar" /> -->
+          <span class="span-admin">超级管理员</span>
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
           <router-link to="/">
             <el-dropdown-item> 首页 </el-dropdown-item>
+          </router-link>
+           <router-link to="/password">
+            <el-dropdown-item> 修改密码 </el-dropdown-item>
           </router-link>
           <el-dropdown-item divided>
             <span style="display: block" @click="loginout">退出登录</span>
@@ -73,7 +83,9 @@ a {
           height: 50px;
           border-radius: 10px;
         }
-
+        .span-admin{
+          font-size: 16px;
+        }
         .el-icon-caret-bottom {
           cursor: pointer;
           font-size: 12px;

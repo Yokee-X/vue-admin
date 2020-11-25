@@ -1,7 +1,7 @@
 <!--
  * @Author: Yokee
  * @Date: 2020-11-16 17:19:16
- * @LastEditTime: 2020-11-18 10:00:31
+ * @LastEditTime: 2020-11-23 10:53:08
  * @FilePath: \admin\src\views\Home.vue
 -->
 <template>
@@ -52,7 +52,7 @@ export default {
   left: 0;
   top: 0;
   bottom: 0;
-  width: 210px!important;
+  width: 210px;
   font-size: 0px;
   overflow: hidden;
   z-index: 999;
@@ -62,5 +62,13 @@ export default {
   position: relative;
   min-height: 100%;
   margin-left: 210px;
+}
+
+@media screen and (max-width: 1200px) {
+  .main-container{
+  position: relative;
+  min-height: 100%;
+  margin-left: 55px;
+}
 }
 </style>

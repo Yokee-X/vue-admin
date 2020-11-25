@@ -1,7 +1,7 @@
 /*
  * @Author: Yokee
  * @Date: 2020-11-17 09:52:23
- * @LastEditTime: 2020-11-18 16:24:41
+ * @LastEditTime: 2020-11-25 10:59:41
  * @FilePath: \admin\src\request\index.js
  */
 import axios from "axios";
@@ -36,9 +36,10 @@ const service = axios.create({
 });
 
 service.interceptors.request.use(request => {
+  const token = store.state?.user?.user?.token
   request.headers = {
-    "Content-Type": "application/x-www-form-urlencoded"
-    // 'Authorization': user?.token || ''
+    "Content-Type": "application/x-www-form-urlencoded",
+    'Authorization': token || ''
   };
   return request;
 });
